@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_time/features/auth/data/repository/auth_repository_impl.dart';
+import 'package:movie_time/features/auth/domain/repository/auth_repository.dart';
 import 'package:movie_time/features/auth/domain/usecases/email_validation.dart';
 import 'package:movie_time/features/auth/domain/usecases/password_validation.dart';
 import 'package:movie_time/features/auth/domain/usecases/username_validation.dart';
 import 'package:movie_time/features/auth/presentation/bloc/auth_event.dart';
 import 'package:movie_time/features/auth/presentation/bloc/auth_state.dart';
-import 'package:movie_time/features/auth/presentation/pages/login_screen.dart';
+import 'package:movie_time/features/auth/presentation/pages/sign_up_screen.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+
+  final AuthRepository authRepository = AuthRepositoryImpl();
 
   AuthBloc(): super(AuthInitialState()) {
 
@@ -20,15 +24,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _onCreateAccountButtonClickEvent(
     CreateAccountButtonClickEvent event,
     Emitter<AuthState> emit
-  ) {
+  ) async {
 
     String? emailValidationResut = emailValidationUseCase(event.email);
     String? usernameValidationResut = usernameValidationUseCase(event.username);
     String? passwordValidationResult = passwordValidationUseCase(event.password);
 
     if(emailValidationResut == null && usernameValidationResut == null && passwordValidationResult == null) {
-      var context = event.context;
-      Navigator.push(context,MaterialPageRoute(builder: (context) => const LoginScreen()));
+      final response = await authRepository.signUp(email: event.email, username: event.username, password: event.password);
+      if (response.success) {
+      } else {
+        return emit(AuthFailureState(
+            emailErrorMessage: null, 
+            usernameErrorMessage: null,
+            passwordErrorMessage: response.message
+          )
+        );
+      }
     } else {
       return emit(AuthFailureState(
         emailErrorMessage: emailValidationResut, 
@@ -42,15 +54,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _onLoginButtonClickEvent(
     LoginButtonClickEvent event,
     Emitter<AuthState> emit
-  ) {
+  ) async {
 
     String? emailValidationResut = emailValidationUseCase(event.email);
     String? passwordValidationResult = passwordValidationUseCase(event.password);
 
     if(emailValidationResut == null && passwordValidationResult == null) {
-      print("Navigate To HomeScreen");
-      // var context = event.context;
-      // Navigator.push(context,MaterialPageRoute(builder: (context) => const HomeScreen()));
+      final response = await authRepository.login(email: event.email, password: event.password);
+      if (response.success) {
+        var context = event.context;
+        Navigator.push(context,MaterialPageRoute(builder: (context) => const SignUpScreen()));
+      } else {
+        return emit(AuthFailureState(
+            emailErrorMessage: null, 
+            usernameErrorMessage: null,
+            passwordErrorMessage: response.message
+          )
+        );
+      }
     } else {
       return emit(AuthFailureState(
         emailErrorMessage: emailValidationResut, 
@@ -65,8 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignUpTextClickEvent event,
     Emitter<AuthState> emit
   ) {
-    print("Navigate To SignUpScreen");
-    // var context = event.context;
-    // Navigator.push(context,MaterialPageRoute(builder: (context) => const SignUpScreen()));
+    var context = event.context;
+    Navigator.push(context,MaterialPageRoute(builder: (context) => const SignUpScreen()));
   }
 }

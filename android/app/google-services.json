@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1009937502763",
+    "project_id": "flutter-learn-abyl",
+    "storage_bucket": "flutter-learn-abyl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009937502763:android:31129ebd7d136f9d47106e",
+        "android_client_info": {
+          "package_name": "com.example.movie_time"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-zC3Bh9BXqHUQ2hFzRPZbV0fL6KgAqJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
